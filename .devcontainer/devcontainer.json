@@ -1,0 +1,44 @@
+{
+	"name": "php",
+	"dockerFile": "php/Dockerfile",
+	// "dockerComposeFile": "./docker-compose.yml",
+	// Use 'settings' to set *default* container specific settings.json values on container create. 
+	// You can edit these settings after create using File > Preferences > Settings > Remote.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/zsh"
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace/php,type=bind,consistency=cached",
+	"workspaceFolder": "/workspace/php",
+	// 
+	"mounts": [
+		"source=${localWorkspaceFolder}/.devcontainer/nginx/conf.d,target=/etc/nginx/conf.d,type=bind,consistency=cached",
+		"source=${localWorkspaceFolder}/.devcontainer/nginx/log,target=/var/log/nginx,type=bind,consistency=cached"
+	],
+	// Use 'appPort' to create a container with published ports. If the port isn't working, be sure
+	// your server accepts connections from all interfaces (0.0.0.0 or '*'), not just localhost.
+	"appPort": [
+		"80:80"
+	],
+	// start nginx and php-fpm
+	"postStartCommand": "sudo nginx && sudo php-fpm &",
+	// Uncomment the next line to run commands after the container is created.
+	// "postCreateCommand": "php -v",
+	// Comment out if you want to use root
+	"remoteUser": "vscode",
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"felixfbecker.php-debug",
+		"bmewburn.vscode-intelephense-client",
+		"neilbrayfield.php-docblocker",
+		"eamodio.gitlens",
+		"yzhang.markdown-all-in-one",
+		"mtxr.sqltools",
+		"mtxr.sqltools-driver-mysql",
+		"mtxr.sqltools-driver-pg",
+		"mtxr.sqltools-driver-sqlite"
+	],
+	// add database_app network
+	"runArgs": [
+		"--network=database_app"
+	]
+}
