@@ -34,8 +34,9 @@
 		"yzhang.markdown-all-in-one",
 		"mtxr.sqltools",
 		"mtxr.sqltools-driver-mysql",
-		"mtxr.sqltools-driver-pg",
-		"mtxr.sqltools-driver-sqlite"
+		"amiralizadeh9480.laravel-extra-intellisense",
+		"onecentlin.laravel-blade",
+		"onecentlin.laravel5-snippets"
 	],
 	// add database_app network
 	"runArgs": [
