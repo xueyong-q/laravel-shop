@@ -36,7 +36,8 @@
 		"mtxr.sqltools-driver-mysql",
 		"amiralizadeh9480.laravel-extra-intellisense",
 		"onecentlin.laravel-blade",
-		"onecentlin.laravel5-snippets"
+		"onecentlin.laravel5-snippets",
+		"Gruntfuggly.todo-tree"
 	],
 	// add database_app network
 	"runArgs": [
