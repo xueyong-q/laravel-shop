@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5da8b49989de7e377c88a2a56f8f8853",
+    "content-hash": "48cc0113add564f34d1f87cd0d0373a3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -127,12 +127,12 @@
             "version": "7.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/caouecs/Laravel-lang.git",
+                "url": "https://github.com/caouecs/lang.git",
                 "reference": "c28e39a14dc3cacaeb8db0a7cc612db37d1e15cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caouecs/Laravel-lang/zipball/c28e39a14dc3cacaeb8db0a7cc612db37d1e15cc",
+                "url": "https://api.github.com/repos/caouecs/lang/zipball/c28e39a14dc3cacaeb8db0a7cc612db37d1e15cc",
                 "reference": "c28e39a14dc3cacaeb8db0a7cc612db37d1e15cc",
                 "shasum": "",
                 "mirrors": [
@@ -168,6 +168,7 @@
                 "laravel",
                 "lpm"
             ],
+            "abandoned": "https://github.com/Laravel-Lang/lang",
             "time": "2020-08-05T17:42:42+00:00"
         },
         {
@@ -1245,6 +1246,64 @@
                 "url"
             ],
             "time": "2019-07-01T23:21:34+00:00"
+        },
+        {
+            "name": "jxlwqq/quill",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jxlwqq/quill.git",
+                "reference": "a9609fd9108555bf3b821ce21c7f8b2f62733b2c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jxlwqq/quill/zipball/a9609fd9108555bf3b821ce21c7f8b2f62733b2c",
+                "reference": "a9609fd9108555bf3b821ce21c7f8b2f62733b2c",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "encore/laravel-admin": "~1.6",
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Jxlwqq\\Quill\\QuillServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jxlwqq\\Quill\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "jxlwqq",
+                    "email": "jxlwqq@gmail.com"
+                }
+            ],
+            "description": "quill editor for laravel-admin",
+            "homepage": "https://github.com/jxlwqq/quill",
+            "keywords": [
+                "extension",
+                "laravel-admin"
+            ],
+            "time": "2018-11-21T05:41:26+00:00"
         },
         {
             "name": "laravel/framework",
