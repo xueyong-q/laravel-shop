@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class ProductsController extends Controller
 {
+    /**
+     * 商品列表页
+     *
+     * @param Request $request
+     * @return void
+     */
     public function index(Request $request)
     {
         // 创建一个查询构造器
@@ -49,5 +55,15 @@ class ProductsController extends Controller
                 'order' => $order
             ]
         ]);
+    }
+
+    public function show(Product $product, Request $request)
+    {
+        // 判断商品是否已经上架，如果没有上架则抛出异常。
+        if (! $product->on_sale) {
+            throw new \Exception('商品未上架');
+        }
+
+        return view('products.show', ['product' => $product]);
     }
 }
