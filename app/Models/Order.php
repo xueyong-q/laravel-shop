@@ -88,4 +88,9 @@ class Order extends Model
         \Log::warning('find order no failed');
         return false;
     }
+
+    public function setAddressAttribute($value)
+    {
+        $this->attributes['address'] = json_encode($value);
+    }
 }

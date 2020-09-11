@@ -14,7 +14,7 @@ class OrderItem extends Model
         'reviewed_at'
     ];
 
-    protected $timestamps = false;
+    public $timestamps = false;
 
     public function product()
     {
