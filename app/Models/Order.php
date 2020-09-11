@@ -36,6 +36,14 @@ class Order extends Model
         'ship_data', 'extra',
     ];
 
+    protected $casts = [
+        'closed' => 'boolean',
+        'reviewed' => 'boolean',
+        'address' => 'json',
+        'ship_data' => 'json',
+        'extra' => 'json'
+    ];
+
     protected $dates = [
         'paid_at'
     ];
@@ -87,10 +95,5 @@ class Order extends Model
 
         \Log::warning('find order no failed');
         return false;
-    }
-
-    public function setAddressAttribute($value)
-    {
-        $this->attributes['address'] = json_encode($value);
     }
 }
