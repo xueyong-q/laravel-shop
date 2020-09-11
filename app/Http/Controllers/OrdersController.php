@@ -81,6 +81,12 @@ class OrdersController extends Controller
         return $order;
     }
 
+    /**
+     * 订单列表
+     *
+     * @param Request $request
+     * @return void
+     */
     public function index(Request $request)
     {
         $orders = Order::query()
@@ -90,5 +96,18 @@ class OrdersController extends Controller
             ->paginate();
 
         return view('orders.index', ['orders' => $orders]);
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param Order $order
+     * @param Request $request
+     * @return void
+     */
+    public function show(Order $order, Request $request)
+    {
+        $this->authorize('own', $order);
+        return view('orders.show', ['order' => $order->load(['items.product', 'items.productSku'])]);
     }
 }
