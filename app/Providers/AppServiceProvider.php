@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton('wechat_pay', function () {
             $config = config('pay.wechat');
+            $config['notify_url'] = route('payment.wechat.notify');
 
             // 判断当前项目运行环境是否为线上环境
             if (app()->environment() == 'production') {
