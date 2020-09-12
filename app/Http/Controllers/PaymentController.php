@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderPaid;
 use App\Exceptions\InvalidRequestException;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -85,6 +86,8 @@ class PaymentController extends Controller
             'payment_no' => $data->trade_no, // 支付宝订单号
         ]);
 
+        $this->afterPaid($order);
+
         return app('alipay')->success();
     }
 
@@ -144,6 +147,19 @@ class PaymentController extends Controller
             'payment_no' => $data->transaction_id,
         ]);
 
+        $this->afterPaid($order);
+
         return app('wechat_pay')->success();
+    }
+
+    /**
+     * 注册事件监听
+     *
+     * @param Order $order
+     * @return void
+     */
+    protected function afterPaid(Order $order)
+    {
+        event(new OrderPaid($order));
     }
 }
