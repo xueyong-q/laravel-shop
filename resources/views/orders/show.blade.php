@@ -59,6 +59,17 @@
                             <div class="line-label">订单编号：</div>
                             <div class="line-value">{{ $order->no }}</div>
                         </div>
+                        <div class="line">
+                            <div class="line-label">物流状态：</div>
+                            <div class="line-value">{{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}</div>
+                        </div>
+
+                        @if ($order->ship_data)
+                            <div class="line">
+                                <div class="line-label">物流信息：</div>
+                            <div class="line-value">{{ $order->ship_data['express_company'] }} {{ $order->ship_data['express_no'] }}</div>
+                            </div>
+                        @endif
                     </div>
                     <div class="order-summary text-right">
                         <div class="total-amount">
@@ -82,10 +93,17 @@
                             </div>
                         </div>
 
-                        @if (!$order->paid_at || !$order->closed)
+                        @if (!$order->paid_at && !$order->closed)
                         <div class="payment-buttons">
-                            <a class="btn btn-primary btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付宝支付</a>
+                            <a class="btn btn-primary btn-sm"
+                                href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付宝支付</a>
                             <button class="btn btn-success btn-sm" id="btn-wechat">微信支付</button>
+                        </div>
+                        @endif
+
+                        @if ($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
+                        <div class="receive-button">
+                              <button type="submit" id="btn-receive" class="btn btn-sm btn-success">确认收货</button>
                         </div>
                         @endif
                     </div>
@@ -114,6 +132,30 @@
         }
       })
     });
+
+    // 确认收货按钮点击事件
+    $('#btn-receive').click(function() {
+      // 弹出确认框
+      swal({
+        title: "确认已经收到商品？",
+        icon: "warning",
+        dangerMode: true,
+        buttons: ['取消', '确认收到'],
+      })
+      .then(function(ret) {
+        // 如果点击取消按钮则不做任何操作
+        if (!ret) {
+          return;
+        }
+        // ajax 提交确认操作
+        axios.post('{{ route('orders.received', [$order->id]) }}')
+          .then(function () {
+            // 刷新页面
+            location.reload();
+          })
+      });
+    });
+    
   });
 </script>
 @endsection
