@@ -107,6 +107,13 @@
                             </div>
                         </div>
 
+                        @if (isset($order->extra['refund_disagree_reason']))
+                        <div>
+                            <span>拒绝退款理由：</span>
+                            <div class="value">{{ $order->extra['refund_disagree_reason'] }}</div>
+                        </div>
+                        @endif
+
                         @if (!$order->paid_at && !$order->closed)
                         <div class="payment-buttons">
                             <a class="btn btn-primary btn-sm"
