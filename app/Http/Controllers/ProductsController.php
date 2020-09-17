@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -61,7 +62,7 @@ class ProductsController extends Controller
     public function show(Product $product, Request $request)
     {
         // 判断商品是否已经上架，如果没有上架则抛出异常。
-        if (! $product->on_sale) {
+        if (!$product->on_sale) {
             throw new InvalidRequestException('商品未上架');
         }
 
@@ -73,7 +74,20 @@ class ProductsController extends Controller
             $favored = boolval($user->favoriteProducts()->find($product->id));
         }
 
-        return view('products.show', ['product' => $product, 'favored' => $favored]);
+        // 获取评论列表
+        $reviews = OrderItem::query()
+            ->with(['order.user', 'productSku'])
+            ->where('product_id', $product->id)
+            ->whereNotNull('reviewed_at')
+            ->orderBy('reviewed_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('products.show', [
+            'product' => $product,
+            'favored' => $favored,
+            'reviews' => $reviews
+        ]);
     }
 
     /**
