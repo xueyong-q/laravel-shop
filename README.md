@@ -13,6 +13,16 @@
 * 商品评价功能
 * 优惠券功能
 
+## 项目依赖环境
+
+依赖应用尽量使用最新稳定版本
+* PHP7.2+
+* MySQL5.7
+* Redis5.0
+* Composer1.10
+* node12.18.4+
+* yarn1.22+
+
 ## 安装部署
 
 首先将本项目克隆至本地开发目录或服务器部署目录上。
@@ -41,6 +51,9 @@ $ php artisan storage:link
 
 编译前端资源
 ```sh
+# 安装依赖
+$ SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass yarn
+# 编译前端资源，编译完成后使用 Ctrl + C 中断即可
 $ npm run watch
 ```
 
