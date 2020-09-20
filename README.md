@@ -33,13 +33,100 @@ $ composer install
 ```
 
 安装完扩展包后配置项目环境变量，修改 `.env` 配置文件。如不存在 `.env` 配置文件则复制 `.env.example` 文件为 `.env` 并修改配置。
+```
+# 项目名称配置
+APP_NAME="Laravel Shop"
+# 项目环境标识配置，在正式环境中应当配置为 production
+APP_ENV=local
+# 应用秘钥
+APP_KEY=
+# 调试环境配置，在正式环境中应该配置为 false
+APP_DEBUG=true
+# 项目域名配置
+APP_URL=
 
-将环境变量配置好后执行数据迁移：
+LOG_CHANNEL=stack
+
+# 数据库类型
+DB_CONNECTION=mysql
+# 数据库访问地址
+DB_HOST=127.0.0.1
+# 数据库访问端口
+DB_PORT=3306
+# 数据库名
+DB_DATABASE=laravel_shop
+# 访问数据库用户名
+DB_USERNAME=root
+# 访问数据库用户密码
+DB_PASSWORD=root
+
+BROADCAST_DRIVER=log
+# 缓存类型
+CACHE_DRIVER=redis
+# 队列连接方式
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+
+# Redis 访问地址
+REDIS_HOST=127.0.0.1
+# Redis 访问密码
+REDIS_PASSWORD=null
+# Redis 访问端口
+REDIS_PORT=6379
+
+# 使用支持 ESMTP 的 SMTP 服务器发送邮件
+MAIL_MAILER=smtp
+# 邮箱的 SMTP 服务器地址
+MAIL_HOST=smtp.163.com
+# SMTP 服务器端口
+MAIL_PORT=25
+# 邮箱的 SMTP 服务器地址
+MAIL_USERNAME=xxxxxxxx@163.com
+# 授权码
+MAIL_PASSWORD=
+# 加密类型
+MAIL_ENCRYPTION=tls
+# 此值必须同 MAIL_USERNAME 一致
+MAIL_FROM_ADDRESS=xxxxxxxx@163.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+
+PUSHER_APP_ID=
+PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+PUSHER_APP_CLUSTER=mt1
+
+MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+
+# 支付宝支付配置
+ALIPAY_APP_ID=
+ALIPAY_PUBLIC_KEY=
+ALIPAY_PRIVATE_KEY=
+
+# 微信支付配置
+WECHAT_APP_ID=
+WECHAT_MCH_ID=
+WECHAT_KEY=
+```
+>注意：微信支付下载的证书需存放在 `resources/wechat_pay` 目录下。
+
+将环境变量配置好后执行数据迁移
 ```sh
 php artisan migrate
 ```
 
-然后数据填充【可选】：
+生成应用秘钥
+```sh
+$ php artisan key:generate
+```
+
+然后数据填充【可选】
 ```sh
 php artisan db:seed
 ```
