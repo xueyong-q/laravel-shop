@@ -81,7 +81,7 @@ MAIL_MAILER=smtp
 MAIL_HOST=smtp.163.com
 # SMTP 服务器端口
 MAIL_PORT=25
-# 邮箱的 SMTP 服务器地址
+# 邮箱的用户名
 MAIL_USERNAME=xxxxxxxx@163.com
 # 授权码
 MAIL_PASSWORD=
