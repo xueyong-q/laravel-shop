@@ -498,3 +498,12 @@ body {
       border-radius: 0px;
     }
   }
+
+/**
+    支付按钮禁用状态
+**/
+  .pay-btn-disable {
+    color: #fff;
+    background-color: #ccc;
+    border-color: #ccc;
+  }

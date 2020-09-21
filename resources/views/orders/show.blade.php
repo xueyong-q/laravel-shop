@@ -124,9 +124,8 @@
 
                         @if (!$order->paid_at && !$order->closed)
                         <div class="payment-buttons">
-                            <a class="btn btn-primary btn-sm"
-                                href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付宝支付</a>
-                            <button class="btn btn-success btn-sm" id="btn-wechat">微信支付</button>
+                            <a class="btn btn-sm pay-btn-disable" href="javascript:;" id="btn-alipay">支付宝支付</a>
+                            <button class="btn btn-sm pay-btn-disable" id="btn-wechat">微信支付</button>
                         </div>
                         @endif
 
@@ -153,20 +152,42 @@
 @section('scriptsAfterJs')
 <script>
     $(document).ready(function() {
+
+    var is_wechat = false;
+
+    @if (config('pay.alipay.app_id'))
+    // 已配置支付宝支付
+    $('#btn-alipay').removeClass('pay-btn-disable');
+    $('#btn-alipay').addClass('btn-primary');
+    $('#btn-alipay').attr('href', "{{ route('payment.alipay', ['order' => $order->id]) }}");
+    @endif
+
+    @if (config('pay.wechat.app_id'))
+    // 已配置微信支付
+    is_wechat = true;
+    $('#btn-wechat').removeClass('pay-btn-disable');
+    $('#btn-wechat').addClass('btn-success');
+    @endif
+
     // 微信支付按钮事件
     $('#btn-wechat').click(function() {
-      swal({
+        
+        if (!is_wechat) {
+            return;
+        }
+
+        swal({
         // content 参数可以是一个 DOM 元素，这里我们用 jQuery 动态生成一个 img 标签，并通过 [0] 的方式获取到 DOM 元素
         content: $('<img src="{{ route('payment.wechat', ['order' => $order->id]) }}" />')[0],
         // buttons 参数可以设置按钮显示的文案
         buttons: ['关闭', '已完成付款'],
-      })
-      .then(function(result) {
-      // 如果用户点击了 已完成付款 按钮，则重新加载页面
-        if (result) {
-          location.reload();
-        }
-      })
+        })
+        .then(function(result) {
+            // 如果用户点击了 已完成付款 按钮，则重新加载页面
+            if (result) {
+                location.reload();
+            }
+        })
     });
 
     // 确认收货按钮点击事件
