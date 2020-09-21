@@ -144,6 +144,11 @@ $ SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass yarn
 $ npm run watch
 ```
 
+添加后台管理员
+```sh
+$ php artisan admin:create-user
+```
+
 启动队列处理器
 ```sh
 $ php artisan queue:work
