@@ -13,6 +13,8 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Yansongda\Pay\Exceptions\GatewayException;
+use Yansongda\Pay\Exceptions\InvalidSignException;
 
 class OrdersController extends AdminController
 {
@@ -185,17 +187,24 @@ class OrdersController extends AdminController
 
             case 'alipay':
                 $refundNo = Order::getAvailableRefundNo();
-                // 调用支付宝支付实例的 refund 方法
-                $res = app('alipay')->refund([
-                    'out_trade_no' => $order->no,
-                    'refund_amount' => $order->total_amount,
-                    'out_request_no' => $refundNo,
-                ]);
+                try {
+                    // 调用支付宝支付实例的 refund 方法
+                    $res = app('alipay')->refund([
+                        'out_trade_no' => $order->no,
+                        'refund_amount' => $order->total_amount,
+                        'out_request_no' => $refundNo,
+                    ]);
+                } catch (GatewayException $e) {
+                    $sub_code = $e->raw['alipay_trade_refund_response']['sub_code'] ?: '';
+                } catch (InvalidSignException $e) {
+                    $sub_code = $e->raw['alipay_trade_refund_response']['sub_code'] ?: '';
+                }
+
                 // 根据支付宝的文档，如果返回值里有 sub_code 字段说明退款失败
-                if ($res->sub_code) {
+                if (isset($res->sub_code) || isset($sub_code)) {
                     // 将退款失败的保存存入 extra 字段
                     $extra = $order->extra;
-                    $extra['refund_failed_code'] = $res->sub_code;
+                    $extra['refund_failed_code'] = isset($res->sub_code) ? $res->sub_code : $sub_code;
                     // 将订单的退款状态标记为退款失败
                     $order->update([
                         'refund_no' => $refundNo,
