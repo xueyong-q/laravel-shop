@@ -140,8 +140,8 @@ $ php artisan storage:link
 ```sh
 # 安装依赖
 $ SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass yarn
-# 编译前端资源，编译完成后使用 Ctrl + C 中断即可
-$ npm run watch
+# 编译前端资源
+$ yarn dev
 ```
 
 添加后台管理员
