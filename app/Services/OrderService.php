@@ -23,7 +23,7 @@ class OrderService
 
         // 开启一个数据库事务
         $order = \DB::transaction(function () use ($user, $address, $remark, $items, $couponCode) {
-            
+
             // 更新此地址的最后使用时间
             $address->update(['last_used_at' => Carbon::now()]);
 
@@ -89,6 +89,65 @@ class OrderService
         });
 
         dispatch(new CloseOrder($order, config('app.order_ttl')));
+
+        return $order;
+    }
+
+    /**
+     * 众筹下单逻辑
+     *
+     * @param User $user
+     * @param UserAddress $userAddress
+     * @param ProductSku $productSku
+     * @param [type] $amount
+     * @return void
+     */
+    public function crowdfunding(User $user, UserAddress $userAddress, ProductSku $productSku, $amount)
+    {
+        // 开启事务
+        $order = \DB::transaction(function () use ($amount, $productSku, $user, $userAddress) {
+            // 更新地址最后使用时间
+            $userAddress->update(['last_used_at' => Carbon::now()]);
+
+            // 创建一个订单
+            $order = new Order([
+                'address' => [
+                    'address' => $userAddress->full_address,
+                    'zip' => $userAddress->zip,
+                    'contact_name' => $userAddress->contact_name,
+                    'contact_phone' => $userAddress->contact_phone
+                ],
+                'remark' => '',
+                'total_amount' => $productSku->price * $amount,
+            ]);
+
+            // 订单关联到当前用户
+            $order->user()->associate($user);
+            // 写入数据库
+            $order->save();
+
+            // 创建一个新的订单项并与 SKU 关联
+            $item = $order->items()->make([
+                'amount' => $amount,
+                'price' => $productSku->price
+            ]);
+
+            $item->product()->associate($productSku->product_id);
+            $item->productSku()->associate($productSku);
+            $item->save();
+
+            // 扣减对应 SKU 库存
+            if ($productSku->decreaseStock($amount) <= 0) {
+                throw new InvalidRequestException('该商品库存不足');
+            }
+
+            return $order;
+        });
+
+        // 众筹结束时间减去当前时间得到剩余秒数
+        $crowdfundingTtl = $productSku->product->crowdfunding->end_at->getTimestamp() - time();
+        // 剩余秒数与默认订单关闭时间取较小值作为订单关闭时间
+        dispatch(new CloseOrder($order, min(config('app.order_ttl'), $crowdfundingTtl)));
 
         return $order;
     }
