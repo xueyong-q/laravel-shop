@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\CouponCodeUnavailableException;
+use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Jobs\CloseOrder;
 use App\Models\CouponCode;
@@ -11,6 +12,8 @@ use App\Models\ProductSku;
 use App\Models\User;
 use App\Models\UserAddress;
 use Carbon\Carbon;
+use Yansongda\Pay\Exceptions\GatewayException;
+use Yansongda\Pay\Exceptions\InvalidSignException;
 
 class OrderService
 {
@@ -152,5 +155,74 @@ class OrderService
         dispatch(new CloseOrder($order, min(config('app.order_ttl'), $crowdfundingTtl)));
 
         return $order;
+    }
+
+    /**
+     * 退款逻辑
+     *
+     * @param Order $order
+     * @return void
+     */
+    public function refundOrder(Order $order)
+    {
+        // 判断该订单的支付方式
+        switch ($order->payment_method) {
+            case 'wechat': // 微信退款
+                // 生成退款订单号
+                $refundNo = Order::getAvailableRefundNo();
+
+                app('wechat_pay')->refund([
+                    'out_trade_no' => $order->no,
+                    'total_fee' => $order->total_amount * 100,
+                    'refund_fee' => $order->total_amount * 100,
+                    'out_refund_no' => $refundNo,
+                    'notify_url' => route('payment.wechat.refund_notify')
+                ]);
+
+                $order->update([
+                    'refund_no' => $refundNo,
+                    'refund_status' => Order::REFUND_STATUS_PROCESSING
+                ]);
+                break;
+
+            case 'alipay': // 支付宝退款
+                // 生成退款订单号
+                $refundNo = Order::getAvailableRefundNo();
+
+                try {
+                    $ref = app('alipay')->refund([
+                        'out_trade_no' => $order->no,
+                        'refund_amount' => $order->total_amount,
+                        'out_request_no' => $refundNo,
+                    ]);
+                } catch (GatewayException $e) {
+                    $sub_code = $e->raw['alipay_trade_refund_response']['sub_code'] ?: '';
+                } catch (InvalidSignException $e) {
+                    $sub_code = $e->raw['alipay_trade_refund_response']['sub_code'] ?: '';
+                }
+
+                if (isset($ref->sub_code) || isset($sub_code)) {
+                    $extra = $ref->extra;
+
+                    $extra['refund_failed_code'] = isset($ref->sub_code) ? $ref->sub_code : $sub_code;
+                    $order->update([
+                        'refund_no' => $refundNo,
+                        'refund_status' => Order::REFUND_STATUS_FAILED,
+                        'extra' => $extra
+                    ]);
+                } else {
+                    $order->update([
+                        'refund_no' => $refundNo,
+                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
+                    ]);
+                }
+                break;
+
+            default:
+                throw new InternalException('未知订单支付方式: ' . $order->payment_method);
+                break;
+        }
+
+        return;
     }
 }
