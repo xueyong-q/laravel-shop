@@ -110,22 +110,39 @@
 
 @section('scriptsAfterJs')
 <script>
+    $(document).ready(function () {
 
-var is_wechat = false;
+    var is_wechat = false;
 
-@if (config('pay.alipay.app_id'))
-// 已配置支付宝支付
-$('#btn-alipay').removeClass('pay-btn-disable');
-$('#btn-alipay').addClass('btn-primary');
-$('#btn-alipay').attr('href', "{{ route('installments.alipay', ['installment' => $installment->id]) }}");
-@endif
+    @if (config('pay.alipay.app_id'))
+    // 已配置支付宝支付
+    $('#btn-alipay').removeClass('pay-btn-disable');
+    $('#btn-alipay').addClass('btn-primary');
+    $('#btn-alipay').attr('href', "{{ route('installments.alipay', ['installment' => $installment->id]) }}");
+    @endif
 
-@if (config('pay.wechat.app_id'))
-// 已配置微信支付
-is_wechat = true;
-$('#btn-wechat').removeClass('pay-btn-disable');
-$('#btn-wechat').addClass('btn-success');
-@endif
+    @if (config('pay.wechat.app_id'))
+    // 已配置微信支付
+    is_wechat = true;
+    $('#btn-wechat').removeClass('pay-btn-disable');
+    $('#btn-wechat').addClass('btn-success');
+    @endif
+
+    $('#btn-wechat').click(function () {
+        if (!is_wechat) return;
+
+        swal({
+            content: $('<img src=" {{ route("installments.wechat", ["installment" => $installment->id]) }}" />')[0],
+            buttons: ['关闭', '已完成付款']
+        })
+        .then(function (result) {
+            // 如果用户点击了 已完成付款 按钮，则重新加载页面
+            if (result) {
+                location.reload();
+            }
+        });
+    });
+});
 
 </script>
 @endsection
