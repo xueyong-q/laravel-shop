@@ -55,8 +55,8 @@
                             <div class="value">{{ $nextItem->due_date->format('Y-m-d') }}</div>
                         </div>
                         <div class="payment-buttons">
-                            <a class="btn btn-primary btn-sm" href="">支付宝支付</a>
-                            <button class="btn btn-sm btn-success" id='btn-wechat'>微信支付</button>
+                            <a class="btn pay-btn-disable btn-sm" href="" id="btn-alipay">支付宝支付</a>
+                            <button class="btn btn-sm pay-btn-disable" id='btn-wechat'>微信支付</button>
                         </div>
                         @endif
                     </div>
@@ -106,4 +106,26 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scriptsAfterJs')
+<script>
+
+var is_wechat = false;
+
+@if (config('pay.alipay.app_id'))
+// 已配置支付宝支付
+$('#btn-alipay').removeClass('pay-btn-disable');
+$('#btn-alipay').addClass('btn-primary');
+$('#btn-alipay').attr('href', "{{ route('installments.alipay', ['installment' => $installment->id]) }}");
+@endif
+
+@if (config('pay.wechat.app_id'))
+// 已配置微信支付
+is_wechat = true;
+$('#btn-wechat').removeClass('pay-btn-disable');
+$('#btn-wechat').addClass('btn-success');
+@endif
+
+</script>
 @endsection
