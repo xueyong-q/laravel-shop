@@ -41,7 +41,7 @@ class InstallmentItem extends Model
     public function getTotalAttribute()
     {
         // 使用 Brick\Math 扩展来处理金额
-        $total = BigDecimal::of($this->base)->plus($this->fine);
+        $total = BigDecimal::of($this->base)->plus($this->fee);
         if (!is_null($this->fine)) {
             $total->plus($this->fine);
         }
