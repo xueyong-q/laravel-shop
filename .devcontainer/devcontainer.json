@@ -1,5 +1,5 @@
 {
-	"name": "php",
+	"name": "laravel-shop",
 	"dockerFile": "php/Dockerfile",
 	// "dockerComposeFile": "./docker-compose.yml",
 	// Use 'settings' to set *default* container specific settings.json values on container create. 
