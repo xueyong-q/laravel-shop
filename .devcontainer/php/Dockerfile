@@ -7,10 +7,7 @@ ARG USER_GID=$USER_UID
 
 # 扩展配置
 COPY conf.d/ $PHP_INI_DIR/conf.d/
-
-# 配置 zsh
-COPY .oh-my-zsh/ /home/${USERNAME}/.oh-my-zsh
-COPY .oh-my-zsh/templates/zshrc.zsh-template /home/${USERNAME}/.zshrc
+COPY ohmyzsh.sh /tmp/
 
 # 构建PHP
 RUN sed -ri 's/https?:\/\/.*\.debian\.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
@@ -30,8 +27,8 @@ RUN sed -ri 's/https?:\/\/.*\.debian\.org/https:\/\/mirrors.tuna.tsinghua.edu.cn
     # 处理用户权限
     && groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/zsh --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME} \
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME} \
     #
     # Composer
@@ -39,15 +36,19 @@ RUN sed -ri 's/https?:\/\/.*\.debian\.org/https:\/\/mirrors.tuna.tsinghua.edu.cn
     && sudo -u ${USERNAME} curl -o /home/${USERNAME}/bin/composer https://mirrors.aliyun.com/composer/composer.phar \
     && chmod +x /home/${USERNAME}/bin/composer \
     && sudo -u ${USERNAME} /home/${USERNAME}/bin/composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ \
-    && sudo -u ${USERNAME} echo "export PATH=\$PATH:\$HOME/.composer/vendor/bin" >> /home/${USERNAME}/.envrc \
     #
     # 环境变量配置
-    && echo "export USER_BIN=/home/${USERNAME}/bin" >> /home/${USERNAME}/.envrc \
-    && echo "export PATH=\$USER_BIN:\$PATH " >> /home/${USERNAME}/.envrc \
-    && echo -e "\n. ~/.envrc" >> /home/${USERNAME}/.zshrc \
+    && echo "export PATH=\$PATH:\$HOME/.composer/vendor/bin" >> /home/${USERNAME}/.envrc \
+    && echo "export PATH=/home/${USERNAME}/bin:\$PATH " >> /home/${USERNAME}/.envrc \
+    && sudo -u ${USERNAME} touch /home/${USERNAME}/.zshrc \
+    && echo ". ~/.envrc" > /home/${USERNAME}/.zshrc \
+    #
     # 修改 PHP 运行用户
     && sed -ri "s/user.*=.*www-data/user = ${USERNAME}/g" /usr/local/etc/php-fpm.d/www.conf \
-    && sed -ri "s/group.*=.*www-data/group = ${USERNAME}/g" /usr/local/etc/php-fpm.d/www.conf
+    && sed -ri "s/group.*=.*www-data/group = ${USERNAME}/g" /usr/local/etc/php-fpm.d/www.conf \
+    #
+    # add permissions
+    && chmod +x /tmp/ohmyzsh.sh
 
 # Install Nginx、Nodejs And yarn
 RUN echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list \

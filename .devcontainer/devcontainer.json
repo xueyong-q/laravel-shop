@@ -1,5 +1,5 @@
 {
-	"name": "laravel-shop",
+	"name": "php",
 	"dockerFile": "php/Dockerfile",
 	// "dockerComposeFile": "./docker-compose.yml",
 	// Use 'settings' to set *default* container specific settings.json values on container create. 
@@ -19,10 +19,10 @@
 	"appPort": [
 		"80:80"
 	],
+	// install ohmyzsh
+	"postCreateCommand": "/tmp/ohmyzsh.sh &",
 	// start nginx and php-fpm
 	"postStartCommand": "sudo nginx && sudo php-fpm &",
-	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "php -v",
 	// Comment out if you want to use root
 	"remoteUser": "vscode",
 	// Add the IDs of extensions you want installed when the container is created in the array below.
@@ -34,9 +34,6 @@
 		"yzhang.markdown-all-in-one",
 		"mtxr.sqltools",
 		"mtxr.sqltools-driver-mysql",
-		"amiralizadeh9480.laravel-extra-intellisense",
-		"onecentlin.laravel-blade",
-		"onecentlin.laravel5-snippets",
 		"Gruntfuggly.todo-tree"
 	],
 	// add database_app network
